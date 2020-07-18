@@ -1,0 +1,223 @@
+<!-- navbar -->
+<nav class="navbar navbar-light bg-dark justify-content-center">
+  <span
+    style="color: whitesmoke; font-weight: bold; font-size: x-large;"
+    class="navbar-brand mb-0 h1"
+    >Form Validation</span
+  >
+</nav>
+<!-- Container -->
+<div class="container">
+  <br />
+  <form [formGroup]="myForm">
+    <!-- city -->
+    <div class="form-group">
+      <label for="exampleInputPassword1">City</label>
+      <input
+        type="text"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Enter City"
+        formControlName="city"
+      />
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('city').touched &&
+          myForm.get('city').errors !== null &&
+          myForm.get('city').errors.required
+        "
+        >City Cannot Be Empty</small
+      >
+    </div>
+    <!-- panNumber -->
+    <div class="form-group">
+      <label for="exampleInputPassword1">Pan Number</label>
+      <input
+        type="text"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Enter Pan Number"
+        formControlName="panNumber"
+      />
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('panNumber').touched &&
+          myForm.get('panNumber').errors !== null &&
+          myForm.get('panNumber').errors.required
+        "
+        >Pan Number Cannot Be Empty</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('panNumber').errors !== null &&
+          myForm.get('panNumber').errors.maxlength
+        "
+        >Max Length Cannot Be Greater Than 10</small
+      >
+      <div>
+        <small
+          class="text-danger"
+          *ngIf="
+            myForm.get('panNumber').errors !== null &&
+            myForm.get('panNumber').errors.pattern
+          "
+          >Invalid Pan Number</small
+        >
+      </div>
+    </div>
+    <!-- Fullname -->
+    <div class="form-group">
+      <label for="exampleInputPassword1">Full Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Enter Full Name"
+        formControlName="fullname"
+      />
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('fullname').touched &&
+          myForm.get('fullname').errors !== null &&
+          myForm.get('fullname').errors.required
+        "
+        >Name Cannot Be Empty</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('fullname').errors !== null &&
+          myForm.get('fullname').errors.maxlength
+        "
+        >Max Length Cannot Be Greater Than 140</small
+      >
+    </div>
+    <!-- email  -->
+    <div class="form-group">
+      <label for="exampleInputEmail1">Email</label>
+      <input
+        type="text"
+        class="form-control"
+        id="exampleInputEmail1"
+        aria-describedby="emailHelp"
+        placeholder="Enter email"
+        formControlName="email"
+      />
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('email').touched &&
+          myForm.get('email').errors !== null &&
+          myForm.get('email').errors.required
+        "
+        >Email Cannot Be Empty</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('email').errors !== null &&
+          myForm.get('email').errors.email
+        "
+        >Invalid Email</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('email').errors !== null &&
+          myForm.get('email').errors.maxlength
+        "
+        >Max Length Cannot Be Greater Than 255</small
+      >
+    </div>
+    <!-- Mobile -->
+    <div class="form-group">
+      <label for="exampleInputPassword1">Mobile</label>
+      <div class="input-group mb-2">
+        <div class="input-group-prepend">
+          <div class="input-group-text">+91</div>
+        </div>
+        <input
+          type="number"
+          class="form-control"
+          id="inlineFormInputGroup"
+          placeholder="Enter Mobile Number"
+          formControlName="mobile"
+          (change)="getOTP($event)"
+        />
+      </div>
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('mobile').touched &&
+          myForm.get('mobile').errors !== null &&
+          myForm.get('mobile').errors.required
+        "
+        >Mobile Number Cannot Be Empty</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('mobile').errors !== null &&
+          myForm.get('mobile').errors.max
+        "
+        >Length Cannot Be Greater Than 10</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('mobile').errors !== null &&
+          myForm.get('mobile').errors.min
+        "
+        >Length Cannot Be Less Than 10</small
+      >
+    </div>
+    <!-- OTP -->
+    <div class="form-group" *ngIf="displayOTP">
+      <label for="exampleInputPassword1">OTP</label>
+      <input
+        type="number"
+        class="form-control"
+        id="exampleInputPassword1"
+        placeholder="Enter OTP"
+        formControlName="otp"
+        (change)="onOtpChange($event)"
+      />
+
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('otp').touched &&
+          myForm.get('otp').errors !== null &&
+          myForm.get('otp').errors.required
+        "
+        >OTP Cannot Be Empty</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('otp').errors !== null && myForm.get('otp').errors.min
+        "
+        >Min Length Cannot Be Less Than 4</small
+      >
+      <small
+        class="text-danger"
+        *ngIf="
+          myForm.get('otp').errors !== null && myForm.get('otp').errors.max
+        "
+        >Max Length Cannot Be Greater Than 4</small
+      >
+    </div>
+    <div *ngIf="displayResendError">
+      <small class="text-danger">Please try again after an hour.</small>
+    </div>
+    <div *ngIf="displayResendOTP">
+      <a routerLink="" style="text-decoration: none;" (click)="resendOTPClick()"
+        >Resend OTP</a
+      >
+    </div>
+  </form>
+</div>

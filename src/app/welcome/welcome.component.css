@@ -1,0 +1,9 @@
+h3 {
+  color: black;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: bold;
+}
+span h3 {
+  color: red;
+  text-transform: uppercase;
+}

@@ -1,18 +1,31 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { BrowserModule } from "@angular/platform-browser";
+import { NgModule } from "@angular/core";
+//import { ReactiveFormsModule } from "@angular/forms";
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { FormComponent } from "./form/form.component";
+import { ReactiveFormsModule } from "@angular/forms";
+import { DataserviceService } from "./dataservice.service";
+import { HttpClientModule } from "@angular/common/http";
+import { WelcomeComponent } from "./welcome/welcome.component";
+import { Routes, RouterModule } from "@angular/router";
+
+const routes: Routes = [
+  { path: "", component: FormComponent },
+  { path: "welcome/:fullname", component: WelcomeComponent }
+];
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent, FormComponent, WelcomeComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    RouterModule.forRoot(routes)
   ],
-  providers: [],
+  providers: [DataserviceService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
