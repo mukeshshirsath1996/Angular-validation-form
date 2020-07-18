@@ -55,18 +55,23 @@ export class FormComponent implements OnInit {
       mobile: this.myForm.value.mobile
     };
 
-    if (this.resendOTPCount < 2) {
+    if (this.resendOTPCount < 3) {
+      this.resendOTPCount = this.resendOTPCount + 1;
       let result = this.service.getOTP(obj);
       result.subscribe((data: any) => {
         if (data.statusCode === 200) {
+          console.log("data :" + data);
           this.displayOTP = true;
           setTimeout(() => {
-            this.displayResendOTP = true;
-          }, 3 * 60000);
+            if (this.resendOTPCount < 3) {
+              this.displayResendOTP = true;
+            }
+          }, 2000);
         }
       });
     } else {
       this.displayResendOTP = false;
+      this.displayResendError = true;
     }
     return true;
   }
@@ -88,14 +93,7 @@ export class FormComponent implements OnInit {
     }
   }
   resendOTPClick() {
-    if (this.resendOTPCount < 2) {
-      this.resendOTPCount = this.resendOTPCount + 1;
-      // call getOTP api
-      this.callAPI();
-    } else {
-      this.displayResendOTP = false;
-      this.displayResendError = true;
-    }
+    this.callAPI();
   }
   onOtpChange(event) {
     if (event.target.value.length === 4) {
