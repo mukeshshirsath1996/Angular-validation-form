@@ -60,7 +60,6 @@ export class FormComponent implements OnInit {
       let result = this.service.getOTP(obj);
       result.subscribe((data: any) => {
         if (data.statusCode === 200) {
-          console.log("data :" + data);
           this.displayOTP = true;
           setTimeout(() => {
             if (this.resendOTPCount < 3) {
