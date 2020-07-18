@@ -66,7 +66,7 @@ export class FormComponent implements OnInit {
             if (this.resendOTPCount < 3) {
               this.displayResendOTP = true;
             }
-          }, 2000);
+          }, 3 * 60000);
         }
       });
     } else {
