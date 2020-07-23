@@ -21,7 +21,7 @@ export class DataserviceService {
   verifyOTP(obj: any) {
     const header = new HttpHeaders();
     header.set("content-type", "application/json");
-    console.log("in service");
+    console.log("in verify service");
     return this.http.post("http://lab.thinkoverit.com/api/verifyOTP.php", obj, {
       headers: header
     });

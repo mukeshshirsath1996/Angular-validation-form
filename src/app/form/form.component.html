@@ -146,9 +146,10 @@
           id="inlineFormInputGroup"
           placeholder="Enter Mobile Number"
           formControlName="mobile"
-          (change)="getOTP($event)"
+          #mobileCall
         />
       </div>
+      <strong *ngIf="status">Loading...</strong>
       <small
         class="text-danger"
         *ngIf="
@@ -184,7 +185,8 @@
         id="exampleInputPassword1"
         placeholder="Enter OTP"
         formControlName="otp"
-        (change)="onOtpChange($event)"
+        #key
+        (keyup)="onOtpChange()"
       />
 
       <small
@@ -218,6 +220,9 @@
       <a routerLink="" style="text-decoration: none;" (click)="resendOTPClick()"
         >Resend OTP</a
       >
+    </div>
+    <div *ngIf="displayTimer">
+      <strong class="text-primary">{{ minute }} min {{ seconds }} sec</strong>
     </div>
   </form>
 </div>

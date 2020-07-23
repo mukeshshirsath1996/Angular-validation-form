@@ -1,7 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { DataserviceService } from "../dataservice.service";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Router } from "@angular/router";
+import { debounceTime, map, filter } from "rxjs/operators";
+import { fromEvent, timer, Subscription } from "rxjs";
 
 @Component({
   selector: "app-form",
@@ -13,7 +15,15 @@ export class FormComponent implements OnInit {
   displayOTP: boolean = false;
   displayResendOTP: boolean = false;
   displayResendError: boolean = false;
+  displayTimer: boolean = false;
+  status: boolean = false;
   resendOTPCount: number = 0;
+  otpText: number;
+  _time: number = 179;
+  minute: number;
+  seconds: number;
+  timerSubscription: Subscription;
+  @ViewChild("mobileCall", { static: true }) mobileCall: ElementRef;
   constructor(private service: DataserviceService, private route: Router) {}
 
   ngOnInit() {
@@ -55,27 +65,57 @@ export class FormComponent implements OnInit {
       mobile: this.myForm.value.mobile
     };
 
-    if (this.resendOTPCount < 3) {
-      this.resendOTPCount = this.resendOTPCount + 1;
-      let result = this.service.getOTP(obj);
-      result.subscribe((data: any) => {
-        if (data.statusCode === 200) {
-          this.displayOTP = true;
+    let result = this.service.getOTP(obj);
+    result.subscribe((data: any) => {
+      if (data.statusCode === 200) {
+        this.displayOTP = true;
+        this.status = false;
+        if (this.resendOTPCount === 3) {
+          this.displayResendError = true;
+        } else {
           setTimeout(() => {
-            if (this.resendOTPCount < 3) {
-              this.displayResendOTP = true;
-            }
-          }, 3 * 60000);
+            this.startTimer();
+          }, 0);
         }
-      });
-    } else {
-      this.displayResendOTP = false;
-      this.displayResendError = true;
-    }
-    return true;
+      }
+    });
+  }
+  startTimer() {
+    //console.log("in timer");
+    this.displayTimer = true;
+    let time = this._time;
+
+    const numbers = timer(0, 1000);
+    this.timerSubscription = numbers.subscribe(() => {
+      time = time - 1;
+      this.minute = Math.floor(time / 60);
+      this.seconds = time % 60;
+      if (this.minute == 0 && this.seconds == 0) {
+        this.displayTimer = false;
+        this.timerSubscription.unsubscribe();
+        if (this.resendOTPCount < 3) {
+          this.displayResendOTP = true;
+          this.timerSubscription.unsubscribe();
+        }
+      }
+    });
+  }
+  ngAfterViewInit() {
+    const inputMobile = fromEvent<any>(
+      this.mobileCall.nativeElement,
+      "keyup"
+    ).pipe(
+      map(event => event.target.value),
+      filter(res => res.length == 10),
+
+      debounceTime(1000)
+    );
+    inputMobile.subscribe(res => {
+      this.getOTP();
+    });
   }
 
-  getOTP(event) {
+  getOTP() {
     let form = this.myForm.controls;
     if (
       form.city.status === "VALID" &&
@@ -84,18 +124,24 @@ export class FormComponent implements OnInit {
       form.mobile.status === "VALID"
     ) {
       // call getOTP api
+      this.status = true;
       this.callAPI();
-      console.log("call getOTP api");
     } else {
       alert("Enter Valid Fields");
       location.reload();
     }
   }
   resendOTPClick() {
-    this.callAPI();
+    if (this.resendOTPCount < 3) {
+      this.resendOTPCount = this.resendOTPCount + 1;
+      this.displayResendOTP = false;
+
+      this.callAPI();
+    }
   }
-  onOtpChange(event) {
-    if (event.target.value.length === 4) {
+  onOtpChange() {
+    let form = this.myForm.controls;
+    if (form.otp.status == "VALID") {
       let obj = {
         mobile: this.myForm.value.mobile,
         otp: this.myForm.value.otp
